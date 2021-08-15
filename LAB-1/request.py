@@ -28,3 +28,5 @@ def run_query(query):
 
 result = run_query(query)['data']['search']['nodes']
 print(json.dumps(result, indent=4, sort_keys=True))# Prettify result
+
+print(f"\nResults count: {len(result)}")
