@@ -14,7 +14,7 @@ def run_query(query):
   
 query = """
 query example {
-  search(query: "stars:>1", type: REPOSITORY, first: 100) {
+  search(query: "stars:>1", type: REPOSITORY, last: 100) {
     nodes {
       ... on Repository {
         nameWithOwner
