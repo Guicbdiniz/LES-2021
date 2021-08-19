@@ -8,6 +8,10 @@ headers = {"Authorization": f"token {token}"}
 query = """
 query{
 	search(query:"stars:>100", type:REPOSITORY, first:100){
+    pageInfo{
+		hasNextPage
+		endCursor
+	}
 		nodes{
 		...on Repository{
 			nameWithOwner
