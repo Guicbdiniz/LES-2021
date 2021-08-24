@@ -1,44 +1,48 @@
+import json
+
 import requests
 import os
 import pandas as pd
-import json
+import logging
 
-token = os.getenv('GITHUB_TOKEN')
+logging.basicConfig(level=logging.INFO, format='%(message)s')
+logger = logging.getLogger(__name__)
 
-def run_query(cursor):
+
+def query_github_api(cursor):
     headers = {"Authorization": f"token {token}"}
     query = '''
     query{
         search(query:"stars:>0", type:REPOSITORY, first:100, after:"''' + cursor + '''"){
-        pageInfo{
-            hasNextPage
-            endCursor
-        }
-            nodes{
-            ...on Repository{
-                nameWithOwner
-                url
-                stargazers{
-            totalCount
-        }
-                createdAt
-                pullRequests(states: MERGED){
-                    totalCount
-                }
-                releases(first:1){
-                    totalCount
-                }
-                updatedAt
-                primaryLanguage{
-                    name
-                }
-                open: issues(states:OPEN){
-                    totalCount
-                }
-                closed: issues(states:CLOSED){
-                    totalCount
-                }
+            pageInfo{
+                hasNextPage
+                endCursor
             }
+            nodes{
+                ...on Repository{
+                    nameWithOwner
+                    url
+                    stargazers{
+                        totalCount
+                    }
+                    createdAt
+                    pullRequests(states: MERGED){
+                        totalCount
+                    }
+                    releases(first:1){
+                        totalCount
+                    }
+                    updatedAt
+                    primaryLanguage{
+                        name
+                    }
+                    open: issues(states:OPEN){
+                        totalCount
+                    }
+                    closed: issues(states:CLOSED){
+                        totalCount
+                    }
+                }
             }
         }
     }
@@ -47,25 +51,38 @@ def run_query(cursor):
     if request.status_code == 200:
         return request.json()
     else:
+        logger.warning(request.text)
         raise Exception(f"Query failed to run by returning code of {request.status_code}. {query}")
 
-def paginate(pages):
+
+def get_paginated_data_from_repositories(num_pages) -> list:
     has_next_page = True
-    cursor="Y3Vyc29yOjAK" # Page = 0
+    cursor = "Y3Vyc29yOjAK"  # Page = 0
     csv = []
 
-    while (has_next_page and (pages > 0)):
-        data = run_query(cursor)['data']
-        pages = pages - 1
+    while has_next_page and (num_pages > 0):
+        data = query_github_api(cursor)['data']
+        num_pages = num_pages - 1
         has_next_page = data['search']['pageInfo']['hasNextPage']
         cursor = data['search']['pageInfo']['endCursor']
         result = data['search']['nodes']
-        # print(json.dumps(result, indent=4, sort_keys=True))# Prettify result # Debug
-        csv.append(result)  
+        logger.debug(json.dumps(result, indent=4, sort_keys=True))
+        csv.append(result)
         if not has_next_page:
-            print("has_next_page returned false")
-       
+            logger.info("Has_next_page returned False")
+
     return csv
 
-results = paginate(10)
-pd.DataFrame(results).to_csv('results.csv')
+
+if __name__ == '__main__':
+    token = os.getenv('GITHUB_TOKEN')
+
+    try:
+        if token is None:
+            raise Exception("Invalid token")
+        logger.info(f'Token used: {token}')
+        results = get_paginated_data_from_repositories(10)
+        pd.DataFrame(results).to_csv('results.csv')
+        logger.info('Results saved in "results.csv"')
+    except Exception as e:
+        logger.warning(e)
