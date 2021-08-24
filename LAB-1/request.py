@@ -5,8 +5,8 @@ import os
 import pandas as pd
 import logging
 
-token = os.getenv('GITHUB_TOKEN')
-logger = logging.Logger(name=__name__, level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO, format='%(message)s')
+logger = logging.getLogger(__name__)
 
 
 def query_github_api(cursor):
@@ -66,7 +66,7 @@ def get_paginated_data_from_repositories(num_pages) -> list:
         has_next_page = data['search']['pageInfo']['hasNextPage']
         cursor = data['search']['pageInfo']['endCursor']
         result = data['search']['nodes']
-        logger.info(json.dumps(result, indent=4, sort_keys=True))
+        logger.debug(json.dumps(result, indent=4, sort_keys=True))
         csv.append(result)
         if not has_next_page:
             logger.info("Has_next_page returned False")
@@ -75,7 +75,12 @@ def get_paginated_data_from_repositories(num_pages) -> list:
 
 
 if __name__ == '__main__':
+    token = os.getenv('GITHUB_TOKEN')
+
     try:
+        if token is None:
+            raise Exception("Invalid token")
+        logger.info(f'Token used: {token}')
         results = get_paginated_data_from_repositories(10)
         pd.DataFrame(results).to_csv('results.csv')
         logger.info('Results saved in "results.csv"')
