@@ -15,7 +15,7 @@ def query_github_api(filter, quantity, cursor):
     headers = {"Authorization": f"token {token}"}
     query = '''
     query{
-        search(query:"''' + filter + '''", type:REPOSITORY, first:"''' + quantity + '''", after:"''' + cursor + '''"){
+        search(query:"''' + filter + '''", type:REPOSITORY, first:''' + quantity + ''', after:"''' + cursor + '''"){
             pageInfo{
                 hasNextPage
                 endCursor
