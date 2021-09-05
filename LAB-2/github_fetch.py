@@ -1,10 +1,10 @@
-import datetime
 import json
-import git
 import requests
 import os
 import pandas as pd
 import logging
+
+from datetime import datetime
 
 CHARTS_FOLDER_NAME = 'charts'
 
@@ -47,7 +47,7 @@ def query_github_api(filter, quantity, cursor):
 
 def get_paginated_data_from_repositories(num_pages) -> list:
     has_next_page = True
-    filter = "language:java sort:stars"
+    filter = "language:java"
     quantity = "100"
     cursor = "Y3Vyc29yOjAK"  # Page = 0
     csv = []
@@ -57,7 +57,7 @@ def get_paginated_data_from_repositories(num_pages) -> list:
         num_pages = num_pages - 1
         has_next_page = data['search']['pageInfo']['hasNextPage']
         cursor = data['search']['pageInfo']['endCursor']
-        result = data['search']['nodes']
+        result = [format_repo_data(repo_data) for repo_data in data['search']['nodes']]
         logger.debug(json.dumps(result, indent=4, sort_keys=True))
         csv += result
         if not has_next_page:
@@ -65,10 +65,22 @@ def get_paginated_data_from_repositories(num_pages) -> list:
 
     return csv
 
+
+def format_repo_data(repo_data):
+    return {
+        'nameWithOwner': repo_data['nameWithOwner'],
+        'url': repo_data['url'],
+        'stargazers': repo_data['stargazers']['totalCount'],
+        'releases': repo_data['releases']['totalCount'],
+        'age': get_age_from_date_string(repo_data['createdAt'][:10])
+    }
+
+
 def get_age_from_date_string(date_str):
     date_time = datetime.strptime(date_str, '%Y-%m-%d')
     difference = (datetime.now() - date_time).days // 365
     return difference
+
 
 def main():
     if token is None:
@@ -77,9 +89,9 @@ def main():
 
     logger.info('Fetching API...')
     results = get_paginated_data_from_repositories(10)
-    repo_ages = [get_age_from_date_string(data['createdAt'][:10]) for data in results]
 
     results_dt = pd.DataFrame(results)
+    logger.info(results_dt)
     logger.info('Results saved in "results.csv"')
     results_dt.to_csv('results.csv')
 
