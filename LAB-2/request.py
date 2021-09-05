@@ -1,3 +1,4 @@
+import datetime
 import json
 import git
 import requests
@@ -64,6 +65,10 @@ def get_paginated_data_from_repositories(num_pages) -> list:
 
     return csv
 
+def get_age_from_date_string(date_str):
+    date_time = datetime.strptime(date_str, '%Y-%m-%d')
+    difference = (datetime.now() - date_time).days // 365
+    return difference
 
 def main():
     if token is None:
@@ -72,6 +77,7 @@ def main():
 
     logger.info('Fetching API...')
     results = get_paginated_data_from_repositories(10)
+    repo_ages = [get_age_from_date_string(data['createdAt'][:10]) for data in results]
 
     results_dt = pd.DataFrame(results)
     logger.info('Results saved in "results.csv"')
