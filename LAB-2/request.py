@@ -1,5 +1,5 @@
 import json
-
+import git
 import requests
 import os
 import pandas as pd
@@ -11,11 +11,11 @@ logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
 
 
-def query_github_api(cursor, filter):
+def query_github_api(filter, quantity, cursor):
     headers = {"Authorization": f"token {token}"}
     query = '''
     query{
-        search(query:"''' + filter + '''", type:REPOSITORY, first:100, after:"''' + cursor + '''"){
+        search(query:"''' + filter + '''", type:REPOSITORY, first:"''' + quantity + '''", after:"''' + cursor + '''"){
             pageInfo{
                 hasNextPage
                 endCursor
@@ -59,12 +59,13 @@ def query_github_api(cursor, filter):
 
 def get_paginated_data_from_repositories(num_pages) -> list:
     has_next_page = True
-    cursor = "Y3Vyc29yOjAK"  # Page = 0
     filter = "language:java sort:stars"
+    quantity = "100"
+    cursor = "Y3Vyc29yOjAK"  # Page = 0
     csv = []
 
     while has_next_page and (num_pages > 0):
-        data = query_github_api(filter, cursor)['data']
+        data = query_github_api(filter, quantity, cursor)['data']
         num_pages = num_pages - 1
         has_next_page = data['search']['pageInfo']['hasNextPage']
         cursor = data['search']['pageInfo']['endCursor']
