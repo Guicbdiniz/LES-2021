@@ -28,20 +28,7 @@ def query_github_api(filter, quantity, cursor):
                         totalCount
                     }
                     createdAt
-                    pullRequests(states: MERGED){
-                        totalCount
-                    }
                     releases{
-                        totalCount
-                    }
-                    updatedAt
-                    primaryLanguage{
-                        name
-                    }
-                    total: issues{
-                        totalCount
-                    }
-                    closed: issues(states:CLOSED){
                         totalCount
                     }
                 }
@@ -85,8 +72,6 @@ def main():
 
     logger.info('Fetching API...')
     results = get_paginated_data_from_repositories(10)
-
-    # logger.info(results)
 
     results_dt = pd.DataFrame(results)
     logger.info('Results saved in "results.csv"')
