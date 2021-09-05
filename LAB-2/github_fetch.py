@@ -93,7 +93,7 @@ def main():
     results_dt = pd.DataFrame(results)
     logger.info(results_dt)
     logger.info('Results saved in "results.csv"')
-    results_dt.to_csv('results.csv')
+    results_dt.to_csv('api_results.csv')
 
 
 if __name__ == '__main__':
