@@ -85,8 +85,10 @@ def main():
 
     logger.info('Fetching API...')
     results = get_paginated_data_from_repositories(10)
-    results_dt = pd.DataFrame(results)
 
+    # logger.info(results)
+
+    results_dt = pd.DataFrame(results)
     logger.info('Results saved in "results.csv"')
     results_dt.to_csv('results.csv')
 
