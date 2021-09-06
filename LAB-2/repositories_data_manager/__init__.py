@@ -7,7 +7,7 @@ import pandas as pd
 from repositories_data_manager.repository_code_analyser import RepositoriesCodeAnalyser
 
 GITHUB_DATA_CSV_FILENAME = 'api_results.csv'
-# Could not fine a way to import from the other module
+# Could not find a way to import from the other module
 
 ANALYSED_DATA_CSV_FILENAME = 'analysed_data.csv'
 
