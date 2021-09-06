@@ -6,10 +6,10 @@ import logging
 
 from datetime import datetime
 
-CHARTS_FOLDER_NAME = 'charts'
-
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
+
+GITHUB_DATA_CSV_FILENAME = 'api_results.csv'
 
 
 def query_github_api(filter, quantity, cursor):
@@ -92,8 +92,8 @@ def main():
 
     results_dt = pd.DataFrame(results)
     logger.info(results_dt)
-    logger.info('Results saved in "api_results.csv"')
-    results_dt.to_csv('api_results.csv')
+    logger.info(f'Results saved in "{GITHUB_DATA_CSV_FILENAME}"')
+    results_dt.to_csv(GITHUB_DATA_CSV_FILENAME)
 
 
 if __name__ == '__main__':
