@@ -21,11 +21,21 @@ class RepositoriesDataManager:
         self.repos_data = self._check_for_previous_data()
 
     def analyse_repository(self, repo_index):
-        """TODO"""
+        """Analyse repo"""
 
         analysed_repo = self.repos_data.iloc[repo_index]
         logger.info(f'Analysing repo: \n{analysed_repo}')
-        self.repositories_code_analyser.analyse(repo_index, analysed_repo['url'])
+        (cbo, dit, lcom, loc) = self.repositories_code_analyser.analyse(repo_index, analysed_repo['url'])
+        logger.info(f'cbo: {cbo}')
+        logger.info(f'dit: {dit}')
+        logger.info(f'lcom: {lcom}')
+        logger.info(f'loc: {loc}')
+        analysed_repo['cbo'] = cbo
+        analysed_repo['dit'] = dit
+        analysed_repo['lcom'] = dit
+        analysed_repo['loc'] = loc
+        logger.info(f'Analysing repo (after analyses): \n{analysed_repo}')
+        self.repos_data.iloc[repo_index] = analysed_repo
 
     def save_data(self):
         """Save analysed data into .csv file"""
