@@ -13,10 +13,11 @@ GITHUB_DATA_CSV_FILENAME = 'api_results.csv'
 
 
 def query_github_api(filter, quantity, cursor):
+    cursor = 'null' if cursor is None else f'\"{cursor}\"'
     headers = {"Authorization": f"token {token}"}
     query = '''
     query{
-        search(query:"''' + filter + '''", type:REPOSITORY, first:''' + quantity + ''', after:"''' + cursor + '''"){
+        search(query:"''' + filter + '''", type:REPOSITORY, first:''' + quantity + ''', after:''' + cursor + '''){
             pageInfo{
                 hasNextPage
                 endCursor
@@ -25,9 +26,7 @@ def query_github_api(filter, quantity, cursor):
                 ...on Repository{
                     nameWithOwner
                     url
-                    stargazers{
-                        totalCount
-                    }
+                    stargazerCount
                     createdAt
                     releases{
                         totalCount
@@ -47,9 +46,9 @@ def query_github_api(filter, quantity, cursor):
 
 def get_paginated_data_from_repositories(num_pages) -> list:
     has_next_page = True
-    filter = "language:java"
+    filter = "stars:>1 language:java"
     quantity = "100"
-    cursor = "Y3Vyc29yOjAK"  # Page = 0
+    cursor = None
     csv = []
 
     while has_next_page and (num_pages > 0):
@@ -70,7 +69,7 @@ def format_repo_data(repo_data):
     return {
         'nameWithOwner': repo_data['nameWithOwner'],
         'url': repo_data['url'],
-        'stargazers': repo_data['stargazers']['totalCount'],
+        'stargazers': repo_data['stargazerCount'],
         'releases': repo_data['releases']['totalCount'],
         'age': get_age_from_date_string(repo_data['createdAt'][:10])
     }
