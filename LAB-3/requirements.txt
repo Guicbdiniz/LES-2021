@@ -1,0 +1,6 @@
+simpletransformers==0.62.2
+pydantic==1.8.2
+fastapi==0.70.0
+uvicorn==0.15.0
+torch==1.9.1
+

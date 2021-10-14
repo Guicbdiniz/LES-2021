@@ -5,7 +5,6 @@
 1 Install dependencies
 
 ```bash
-cd src/
 pip install -r requirements.txt
 ```
 
@@ -14,5 +13,6 @@ pip install -r requirements.txt
 3 Run the uvicorn server
 
 ```bash
-uvicorn main:app --reload
+cd src/
+uvicorn main:app
 ```
