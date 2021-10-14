@@ -16,3 +16,9 @@ pip install -r requirements.txt
 cd src/
 uvicorn main:app
 ```
+
+4 Test the endpoint
+
+```bash
+curl -X POST http://localhpe: application/json' -d '{"title":"baby"}'
+```
