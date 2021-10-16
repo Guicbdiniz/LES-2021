@@ -20,5 +20,5 @@ uvicorn main:app
 4 Test the endpoint
 
 ```bash
-curl -X POST http://localhpe: application/json' -d '{"title":"baby"}'
+curl -X POST http://localhost:8000/ -H 'Content-Type: application/json' -d '{"title":"baby"}'
 ```
