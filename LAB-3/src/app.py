@@ -1,16 +1,16 @@
-from fastapi import FastAPI
+from flask import request, jsonify,Flask
 from pydantic import BaseModel
 from simpletransformers.classification import ClassificationModel
 
 class Issue(BaseModel):
     title: str
 
-app = FastAPI()
+app = Flask(__name__)
 
-@app.post("/")
-async def root(issue: Issue):
+@app.route("/", methods = ['POST'])
+async def root():
     try:
-        issue_title = issue.title
+        issue_title = request.json['title']
         if issue_title is None:
             raise Exception('Invalid request body')
 
@@ -25,4 +25,3 @@ async def root(issue: Issue):
     except Exception as e:
         print(f'Error: {e}')
         return {'type': 'invalid'}
-        
